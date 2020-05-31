@@ -1,22 +1,24 @@
 from argparse import ArgumentParser
-from Code import preprocess
+import preprocess, model
 import os
 
-parser = ArgumentParser(description="python3 main.py <FILE_PATH>")
-parser.add_argument("path", help="input")
+parser = ArgumentParser(description="python3 [-t] main.py <TEST_PATH>\n"
+                                    "Example: python3 --train main.py ./Example_Test/")
+parser.add_argument("-t", action='store_true', help="Train model")
+parser.add_argument("path", help="Test Path")
 args = parser.parse_args()
 
-computer = []
+if args.t == True:
+    processID = model.train()
+else:
+    processID = ['2480', '2844', '2944', '2848', '3008', '1036']
 
-for i in range(1, 7):
-    computer.append(preprocess.processXML('./Logs/Train/Person_' + str(i) + "/Sysmon.xml"))
-
-test = os.listdir('./Example_Test')
+test = os.listdir(args.path)
 num = 1
 for testcase in test:
-    name = preprocess.processXML('./Example_Test/' + testcase + '/Sysmon.xml')
-    for i in range(6):
-        if name == computer[i]:
-            print('testcase ' + str(num) + ':' + 'person' + str(i))
+    name = preprocess.processXML(args.path + testcase)
+    for i in range(1, 7):
+        if name == processID[i-1]:
+            print('testcase ' + str(num) + ': ' + 'person' + str(i))
             num += 1
             break

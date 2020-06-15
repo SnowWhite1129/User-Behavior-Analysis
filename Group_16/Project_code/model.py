@@ -1,8 +1,9 @@
 import preprocess
-def train():
+
+def train(name):
     processID = []
     for i in range(1, 7):
-        processID.append(preprocess.processXML('./Train/Person_' + str(i)))
+        processID.append(preprocess.processXML('./Train/Person_' + str(i), name))
     return processID
 
 

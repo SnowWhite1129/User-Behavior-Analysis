@@ -19,4 +19,8 @@ python3 main.py <Test_directory>
 python3 main.py ./Example_Test/
 ```
 
-
+## Model
+### Feature
+- Data name
+- logonID
+- Image

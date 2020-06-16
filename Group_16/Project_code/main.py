@@ -10,8 +10,9 @@ args = parser.parse_args()
 
 if args.t == True:
     print('=====Train=====')
-    processSysmonID = model.train('Sysmon')
-    processSecurityID = model.train('Security')
+    processSysmonID = model.trainID('Sysmon')
+    processSecurityID = model.trainID('Security')
+    processDNS = model.trainDNS('Wireshark')
     print(processSysmonID)
     print(processSecurityID)
     print('=====Train=====')

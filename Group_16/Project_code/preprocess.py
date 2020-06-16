@@ -1,4 +1,22 @@
 import xmltodict
+import json
+import os
+
+
+def processJSON(path, name):
+    filename = path + "/" + name +".json" 
+    data = ""
+    with open(filename) as fd:
+        doc = json.load(fd)
+        test = path + '/' + 'test'
+        os.system('cat "' + filename + '" | grep \\\"dns.qry.name\\\" > "' + test + '"')
+        with open(test) as result:
+            lines = result.readlines()
+            for line in lines:
+                tmp = line.strip().strip(',')
+                tmp = tmp.replace('"', '').replace('dns.qry.name:','').replace(' ','')
+                data += tmp + ' '
+    return data
 
 
 def processXML(path, name):
@@ -27,4 +45,4 @@ def processXML(path, name):
 
 
 if __name__ == '__main__':
-    processXML('./Example_Test/Test_1')
+    processJSON("./Example Test/Test_1", 'Wireshark')

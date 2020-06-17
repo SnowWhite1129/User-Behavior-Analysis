@@ -2,14 +2,16 @@ import preprocess
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 
-
 def predict(train, test):
     n = 0
     index = 0
     for i in range(len(train)):
-        similarity = cosine_similarity(train[i], test)
-        if similarity > n:
-            n = similarity
+        weightsum = 0
+        for j in range(len(test)):
+            tmp = train[i].get(test[j], 0)
+            weightsum += tmp
+        if weightsum >= n:
+            n = weightsum
             index = i
     return index
 
@@ -18,9 +20,14 @@ def trainDNS(name):
     query = []
     for i in range(1, 7):
         query.append(preprocess.processJSON('./Train/Person_' + str(i), name))
-    vectorizer = TfidfVectorizer()
+    vectorizer = TfidfVectorizer(token_pattern='\S+')
     DNS = vectorizer.fit_transform(query).toarray()
-    print(vectorizer.get_feature_names())
+    feature = vectorizer.get_feature_names()
+    with open('train.tfidf', 'w') as fd:
+        for i in range(len(DNS)):
+            for j in range(len(feature)):
+                fd.write(feature[j] + ' ' + str(DNS[i][j]) + '\n')
+            fd.write('Person\n')
     return DNS
 
 
@@ -33,8 +40,7 @@ def trainID(name):
 
 if __name__ == '__main__':
     print(trainDNS('Wireshark'))
-    '''
-    print(trainID('Sysmon'))
-    print(trainID('Security'))
-    '''
+#    print(trainID('Sysmon'))
+#    print(trainID('Security'))
+    pass
 

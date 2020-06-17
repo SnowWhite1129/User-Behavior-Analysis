@@ -12,15 +12,15 @@ if args.t == True:
     print('=====Train=====')
     processSysmonID = model.trainID('Sysmon')
     processSecurityID = model.trainID('Security')
-    processDNS = model.trainDNS('Wireshark')
     print(processSysmonID)
     print(processSecurityID)
     print('=====Train=====')
 else:
     processSysmonID = ['2480', '2844', '2944', '2848', '3008', '1036']
-    processSecurityID  = ['{9e1903ff-2cdb-0000-0b05-199edb2cd601}', '{3591cc69-2cda-0001-b1cc-9135da2cd601}', '{46ce64eb-2cda-0001-3665-ce46da2cd601}', '{a21559d7-2cda-0001-275a-15a2da2cd601}', '{e0e75f9b-2cda-0001-ec5f-e7e0da2cd601}', '{7eccaef9-2cd8-0000-01b0-cc7ed82cd601}']
+    processSecurityID = ['{9e1903ff-2cdb-0000-0b05-199edb2cd601}', '{3591cc69-2cda-0001-b1cc-9135da2cd601}', '{46ce64eb-2cda-0001-3665-ce46da2cd601}', '{a21559d7-2cda-0001-275a-15a2da2cd601}', '{e0e75f9b-2cda-0001-ec5f-e7e0da2cd601}', '{7eccaef9-2cd8-0000-01b0-cc7ed82cd601}']
 
-test = os.listdir(args.path)
+processDNS = preprocess.processTFIDF()
+test = sorted(os.listdir(args.path))
 num = 1
 print('=====Test=====')
 for testcase in test:
@@ -28,9 +28,16 @@ for testcase in test:
     if name == None:
         name = preprocess.processXML(args.path + '/' + testcase, 'Security')
         if name == None:
-            print('testcase ' + str(num) + ': ' + 'person ' + str(1))
+            name = preprocess.processJSON(args.path + '/' + testcase, 'Wireshark')
+            if not name:
+                print('testcase ' + str(num) + ': ' + 'person ' + str(1))
+                num += 1
+                continue
+            name = name.split()
+            name = sorted(set(name), key = name.index)
+            result = model.predict(processDNS, name)
+            print('testcase ' + str(num) + ': ' + 'person ' + str(result+1))
             num += 1
-            continue
         else:
             for i in range(1, 7):
                 if name == processSecurityID[i-1]:

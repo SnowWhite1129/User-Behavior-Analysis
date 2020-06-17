@@ -2,6 +2,13 @@ from argparse import ArgumentParser
 import preprocess, model
 import os
 
+
+def operation(processID, name):
+    ID = preprocess.processXML(args.path + '/' + testcase, name)
+    result = model.findID(processID, ID)
+    return result
+
+
 parser = ArgumentParser(description="python3 [-t] main.py <TEST_PATH>\n"
                                     "Example: python3 --train main.py ./Example_Test/")
 parser.add_argument("-t", action='store_true', help="Train model")
@@ -12,8 +19,6 @@ if args.t == True:
     print('=====Train=====')
     processSysmonID = model.trainID('Sysmon')
     processSecurityID = model.trainID('Security')
-    print(processSysmonID)
-    print(processSecurityID)
     print('=====Train=====')
 else:
     processSysmonID = ['2480', '2844', '2944', '2848', '3008', '1036']
@@ -21,34 +26,20 @@ else:
 
 processDNS = preprocess.processTFIDF()
 test = sorted(os.listdir(args.path))
-num = 1
 print('=====Test=====')
 for testcase in test:
-    name = preprocess.processXML(args.path + '/' + testcase, 'Sysmon')
-    if name == None:
-        name = preprocess.processXML(args.path + '/' + testcase, 'Security')
-        if name == None:
-            name = preprocess.processJSON(args.path + '/' + testcase, 'Wireshark')
-            if not name:
-                print('testcase ' + str(num) + ': ' + 'person ' + str(1))
-                num += 1
-                continue
-            name = name.split()
-            name = sorted(set(name), key = name.index)
-            result = model.predict(processDNS, name)
-            print('testcase ' + str(num) + ': ' + 'person ' + str(result+1))
-            num += 1
-        else:
-            for i in range(1, 7):
-                if name == processSecurityID[i-1]:
-                    print('testcase ' + str(num) + ': ' + 'person ' + str(i))
-                    num += 1
-                    break
-    else:
-        for i in range(1, 7):
-            if name == processSysmonID[i-1]:
-                print('testcase ' + str(num) + ': ' + 'person ' + str(i))
-                num += 1
-                break
+    user = operation(processSysmonID, 'Sysmon')
+    if user == 0:
+        user = operation(processSecurityID, 'Security')
+        if user == 0:
+            user = preprocess.processJSON(args.path + '/' + testcase, 'Wireshark')
+            if not user:
+                user = 1
+            else:
+                user = user.split()
+                user = sorted(set(user), key = name.index)
+                user = model.predict(processDNS, user) + 1
+    print(testcase + ': ' + 'person ' + str(user))
+
 print('=====Test=====')
 

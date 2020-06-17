@@ -2,6 +2,14 @@ import preprocess
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 
+
+def findID(train, test):
+    for i in range(1, 7):
+        if name == processSecurityID[i-1]:
+            return i
+    return 0
+
+
 def predict(train, test):
     n = 0
     index = 0

@@ -1,6 +1,7 @@
 # Test data
 Train/
 Real_test/
+.idea/
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
